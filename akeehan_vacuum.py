@@ -1,7 +1,7 @@
-from array import *
 from vacuum import VacuumAgent
 from collections import deque as queue
 import random
+
 
 class AkeehanVacuumAgent(VacuumAgent):
 
@@ -26,5 +26,4 @@ class AkeehanVacuumAgent(VacuumAgent):
         elif (self.last_move == "Up" and percept[1] != 'Bump'):
             self.row = self.row + 1
         elif (self.last_move == "Down" and percept[1] != 'Bump'):
-            self.row = self.row - 1
-        return 'NoOp'
+            self.row = self.row - 1;
