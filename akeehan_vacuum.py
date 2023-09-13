@@ -27,3 +27,14 @@ class AkeehanVacuumAgent(VacuumAgent):
             self.row = self.row + 1
         elif (self.last_move == "Down" and percept[1] != 'Bump'):
             self.row = self.row - 1;
+
+        if [self.row, self.col] not in self.visited and percept[1] != 'Bump' and self.last_move != "NoOp" and self.last_move != "Suck":
+            self.visited.append([self.col, self.row])
+        print(self.visited)
+        if (self.move_made):
+            if (percept[0] == 'Dirty'):
+                self.last_move = 'Suck'
+                self.move_made = False
+                return 'Suck'
+
+
