@@ -23,7 +23,7 @@ class AkeehanVacuumAgent(VacuumAgent):
     def program(self, percept):
         #print("Counter: " + str(self.counter))
         #print("Sucked dirt: " + str(self.sucked_dirt))
-        if (self.turns_between_dirt >= 10):
+        if (self.turns_between_dirt >= 15):
             return 'NoOp'
         #if (self.sucked_dirt >= 30 or self.counter >=75):
          #   return 'NoOp'
@@ -32,7 +32,7 @@ class AkeehanVacuumAgent(VacuumAgent):
         
         if (percept[1] == "None"):
             self.failed_moves = []
-            self.bump_direction = "None"
+            
         
         if (self.last_move == "Left" and percept[1] != 'Bump'):
             self.col = self.col - 1
@@ -82,14 +82,13 @@ class AkeehanVacuumAgent(VacuumAgent):
         # 1 = up
         # 2 = right
         # 3 = down
-       
-        if left not in self.visited and self.bump_direction != "Left" and "Left" not in self.failed_moves and self.last_move != "Suck":
+        if left not in self.visited and self.bump_direction != "Left" and "Left" not in self.failed_moves and self.last_move != "Suck" and self.last_move != "Right":
             self.queue.append(0)
-        if up not in self.visited and self.bump_direction != "Up" and "Up" not in self.failed_moves and self.last_move != "Suck":
+        if up not in self.visited and self.bump_direction != "Up" and "Up" not in self.failed_moves and self.last_move != "Suck" and self.last_move != "Down":
             self.queue.append(1)
-        if right not in self.visited and self.bump_direction != "Right" and "Right" not in self.failed_moves and self.last_move != "Suck":
+        if right not in self.visited and self.bump_direction != "Right" and "Right" not in self.failed_moves and self.last_move != "Suck" and self.last_move != "Left":
             self.queue.append(2)
-        if down not in self.visited and self.bump_direction != "Down" and "Down" not in self.failed_moves and self.last_move != "Suck":
+        if down not in self.visited and self.bump_direction != "Down" and "Down" not in self.failed_moves and self.last_move != "Suck" and self.last_move != "Up":
             self.queue.append(3)
          
         i = 0
@@ -101,31 +100,26 @@ class AkeehanVacuumAgent(VacuumAgent):
         if (percept[0] == "Dirty"):
             self.last_move = "Suck"
             self.turns_between_dirt = 0
-            self.sucked_dirt = self.sucked_dirt + 1
             return 'Suck'
         if (self.queue[len(self.queue) - 1] == 0 and self.bump_direction != "Left" and "Left" not in self.failed_moves):
             self.last_move = "Left"   
             self.turns_between_dirt = self.turns_between_dirt + 1
             self.queue.pop()
-            self.counter = self.counter + 1
             return 'Left'
         elif (self.queue[len(self.queue) - 1] == 1 and self.bump_direction != "Up" and "Up" not in self.failed_moves):
             self.last_move = "Up"
             self.turns_between_dirt = self.turns_between_dirt + 1
             self.queue.pop()
-            self.counter = self.counter + 1
             return 'Up'
         elif (self.queue[len(self.queue) - 1] == 2 and self.bump_direction != "Right" and "Right" not in self.failed_moves):
             self.last_move = "Right"
             self.queue.pop()
             self.turns_between_dirt = self.turns_between_dirt + 1
-            self.counter = self.counter + 1
             return 'Right'
         elif (self.queue[len(self.queue) - 1] == 3 and self.bump_direction != "Down" and "Down" not in self.failed_moves):
             self.last_move = "Down"
             self.queue.pop()
             self.turns_between_dirt = self.turns_between_dirt + 1
-            self.counter = self.counter + 1
             return 'Down'
         else:
             self.queue.pop()
