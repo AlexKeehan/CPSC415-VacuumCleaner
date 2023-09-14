@@ -24,12 +24,13 @@ class AkeehanVacuumAgent(VacuumAgent):
         self.visited = ([])
         self.row = 0
         self.col = 0
-        self.queue = queue(([]))
+        self.queue = []
         self.starting_point = 0.0
         self.pos = [0,0]
         self.last_move = ""
-        self.bump_direction = ""
+        self.bump_direction = "None"
         self.move_made = False
+        self.failed_moves = []
 
 
     def program(self, percept):
@@ -42,6 +43,8 @@ class AkeehanVacuumAgent(VacuumAgent):
         elif (self.last_move == "Down" and percept[1] != 'Bump'):
             self.row = self.row - 1;
 
+        self.pos = [self.row, self.col]
+        print(self.pos)
         if [self.row, self.col] not in self.visited and percept[1] != 'Bump' and self.last_move != "NoOp" and self.last_move != "Suck":
             self.visited += ([self.col, self.row],)
         
@@ -53,9 +56,17 @@ class AkeehanVacuumAgent(VacuumAgent):
 
             if (percept[1] == 'Bump'):
                 self.bump_direction = self.last_move
-            else:
-                self.bump_direction = "None"
         
+        if self.bump_direction != "None":
+            if self.bump_direction == "Left" and "Left" not in self.failed_moves:
+                self.failed_moves.append("Left")
+            elif self.bump_direction == "Up" and "Up" not in self.failed_moves:
+                self.failed_moves.append("Up")
+            elif self.bump_direction == "Right" and "Right" not in self.failed_moves:
+                self.failed_moves.append("Right")
+            elif self.bump_direction == "Down" and "Down" not in self.failed_moves:
+                self.failed_moves.append("Down")
+            
         
         self.visited.append([self.col,self.row])
         left = [self.col - 1, self.row]
@@ -68,41 +79,51 @@ class AkeehanVacuumAgent(VacuumAgent):
         # 2 = right
         # 3 = down
         if left not in self.visited:
-            self.queue.appendleft(0)
+            self.queue.append(0)
         if up not in self.visited:
-            self.queue.appendleft(1)
+            self.queue.append(1)
         if right not in self.visited:
-            self.queue.appendleft(2)
+            self.queue.append(2)
         if down not in self.visited:
-            self.queue.appendleft(3)
+            self.queue.append(3)
         
-        
-        print(self.queue[0])
-        if (self.queue[0] == 0 and left not in self.visited and self.bump_direction != "Left"):
+        i = 0
+        #while i < len(self.queue):
+         #   print(self.queue[i])
+          #  i = i + 1
+        print(self.failed_moves)
+        print(self.last_move)
+        if self.bump_direction != "Left":
+            print(self.bump_direction)
+        if (self.queue[0] == 0 and self.bump_direction != "Left" and "Left" not in self.failed_moves):
             self.last_move = "Left"
             self.move_made = True
-            self.queue.popleft()
+            self.failed_moves = []
+            self.queue.pop()
             return 'Left'
-        elif (self.queue[0] == 1 and up not in self.visited and self.bump_direction != "Up"):
+        elif (self.queue[0] == 1 and self.bump_direction != "Up" and "Up" not in self.failed_moves):
             self.last_move = "Up"
             self.move_made = True
-            self.queue.popleft()
+            self.failed_moves = []
+            self.queue.pop()
             return 'Up'
-        elif (self.queue[0] == 2 and right not in self.visited and self.bump_direction != "Right"):
+        elif (self.queue[0] == 2 and self.bump_direction != "Right" and "Right" not in self.failed_moves):
             self.last_move = "Right"
             self.move_made = True
-            self.queue.popleft()
+            self.failed_moves = []
+            self.queue.pop()
             return 'Right'
-        elif (self.queue[0] == 3 and down not in self.visited and self.bump_direction != "Down"):
+        elif (self.queue[0] == 3 and self.bump_direction != "Down" and "Down" not in self.failed_moves):
             print("Down")
             self.last_move = "Down"
             self.move_made = True
-            self.queue.popleft()
+            self.failed_moves = []
+            self.queue.pop()
             return 'Down'
         else:
-            print("else")
-            self.queue.popleft()
+            self.queue.pop()
             return 'NoOp'
+    
         rand = random.randint(1,4)
         '''
         self.pos = [self.col, self.row]
