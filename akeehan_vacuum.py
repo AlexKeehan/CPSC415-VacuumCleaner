@@ -34,6 +34,7 @@ class AkeehanVacuumAgent(VacuumAgent):
 
 
     def program(self, percept):
+        print(percept[1])
         if (percept[1] == "None"):
             self.failed_moves = []
         
