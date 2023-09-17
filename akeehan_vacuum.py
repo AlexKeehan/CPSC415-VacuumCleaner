@@ -22,11 +22,17 @@ class AkeehanVacuumAgent(VacuumAgent):
         self.failed_moves = []
         # End condition
         self.turns_between_dirt = 0
+        # Used for queue initialization
+        self.moved = False
 
 
     def program(self, percept):
         # End condition, so that it doesn't run forever
-        if (self.turns_between_dirt >= 30):
+        if (len(self.queue) == 0 and self.moved == True):
+            print("NICE")
+            return 'NoOp'
+        # If it doesn't keep getting dirt, then stop
+        elif (self.turns_between_dirt >= 50):
             return 'NoOp'
         # If it spawns in a box, then end it
         elif(len(self.failed_moves) == 4):
@@ -78,6 +84,7 @@ class AkeehanVacuumAgent(VacuumAgent):
         up = [self.col, self.row + 1]
         down = [self.col, self.row - 1]
         
+
         # 0 = left
         # 1 = up
         # 2 = right
@@ -132,23 +139,27 @@ class AkeehanVacuumAgent(VacuumAgent):
         # Only move if the queue matches the direction,
         # There isn't a wall in the way,
         # and there wasn't a failed move in that direction
-        elif (self.queue[len(self.queue) - 1] == 0 and self.bump_direction != "Left" and "Left" not in self.failed_moves):
+        if (self.queue[len(self.queue) - 1] == 0 and self.bump_direction != "Left" and "Left" not in self.failed_moves):
             self.last_move = "Left"   
+            self.moved = True
             self.turns_between_dirt = self.turns_between_dirt + 1
             self.queue.pop()
             return 'Left'
         elif (self.queue[len(self.queue) - 1] == 1 and self.bump_direction != "Up" and "Up" not in self.failed_moves):
             self.last_move = "Up"
+            self.moved = True
             self.turns_between_dirt = self.turns_between_dirt + 1
             self.queue.pop()
             return 'Up'
         elif (self.queue[len(self.queue) - 1] == 2 and self.bump_direction != "Right" and "Right" not in self.failed_moves):
             self.last_move = "Right"
+            self.moved = True
             self.queue.pop()
             self.turns_between_dirt = self.turns_between_dirt + 1
             return 'Right'
         elif (self.queue[len(self.queue) - 1] == 3 and self.bump_direction != "Down" and "Down" not in self.failed_moves):
             self.last_move = "Down"
+            self.moved = True
             self.queue.pop()
             self.turns_between_dirt = self.turns_between_dirt + 1
             return 'Down'
