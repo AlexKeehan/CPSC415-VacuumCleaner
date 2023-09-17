@@ -29,7 +29,6 @@ class AkeehanVacuumAgent(VacuumAgent):
     def program(self, percept):
         # End condition, so that it doesn't run forever
         if (len(self.queue) == 0 and self.moved == True):
-            print("NICE")
             return 'NoOp'
         # If it doesn't keep getting dirt, then stop
         elif (self.turns_between_dirt >= 50):
